@@ -1,0 +1,38 @@
+[package]
+name = "cryptonose"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+name = "cryptonose_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+cn-core.workspace = true
+cn-exchanges.workspace = true
+anyhow.workspace = true
+async-trait.workspace = true
+chrono.workspace = true
+futures.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+reqwest.workspace = true
+tauri = { version = "2", features = ["protocol-asset"] }
+tauri-plugin-notification = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-window-state = "2"
+tauri-plugin-dialog = "2"
+quick-xml = "0.37"
+regex = "1"
+
+[target.'cfg(all(unix, not(target_os = "macos")))'.dependencies]
+# notifications are shown directly on Linux: with a click handler the plugin adds an unlabeled
+# "default" action to every notification, which some servers show as a button
+notify-rust = "4"

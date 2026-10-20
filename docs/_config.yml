@@ -1,0 +1,7 @@
+title: Cryptonose 3
+description: Cryptonose 3 is a tool useful in Cryptocurrency trading
+theme: jekyll-theme-minimal
+show_downloads: false
+logo: images/icon256.png
+plugins:
+  - jekyll-seo-tag
