@@ -3,7 +3,7 @@
 # Cryptonose 3
 
 <!-- IMAGE PLACEHOLDER: images/desktop-screenshot.png - main window: exchange tab with price table, alerts panel on the right, pinned tickers and a desktop notification -->
-[![cryptonose main window with price alerts and notification]({{ site.baseurl }}/images/desktop-screenshot.png "Main window, price alerts")]({{ site.baseurl }}/images/desktop-screenshot.png)
+[![cryptonose main window with price alerts and notification]({{ site.baseurl }}/images/desktop-screenshot.png "Main window, price alerts")]({{ site.baseurl }}/images/screenshot_main.png)
 
 <p style="text-align: center; margin-top: 40px; margin-bottom: 40px;"><a class="download-button" href="{{ site.baseurl }}/download/">Download Cryptonose 3</a></p>
 
