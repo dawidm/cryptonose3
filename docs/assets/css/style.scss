@@ -4,7 +4,7 @@
 @import "{{ site.theme }}";
 
 section {
-	width: 760px;
+	width: 680px;
 }
 header {
 	width: 180px;
@@ -13,7 +13,7 @@ footer {
 	width: 180px;
 }
 .wrapper {
-	width: 980px;
+	width: 900px;
 }
 
 section img {
@@ -48,14 +48,6 @@ section td:first-child {
 	font-size: 0.9em;
 }
 
-@media print, screen and (max-width: 960px) {
-	section, header, footer {
-		width: auto;
-	}
-	.wrapper {
-		width: auto;
-	}
-}
 .download-button {
 	background-color: #27ae60;
 	font-weight: bold;

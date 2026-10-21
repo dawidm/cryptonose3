@@ -21,8 +21,8 @@ You may want to try Cryptonose 3 if you are day trader on cryptocurrency markets
 * Cryptonose 3 uses **real-time connection** to an exchange. For selected cryptocurrency pairs, it uses all exchange transactions (fills) to track the price.
 * Aside from tracking percent price changes, it also tracks **relative price change**. Some currency pairs are much more volatile than others. Relative price change helps to determine when price change is significant for given currency. You can find the details in manual (link at the top of the site).
 * When price change meets price alert conditions Cryptonose 3 can: send **desktop notification**, play **sound**, **run web browser** with exchange website.
-* Pairs can be chosen by minimum 24h volume or as **top N pairs by volume**; the list is refreshed every hour, so it follows the market.
-* **Coin info and news** for every pair: data from CoinGecko and latest headlines from crypto news sites.
+* Pairs can be chosen by minimum 24h volume or as top N pairs by volume; the list is refreshed every hour, so it follows the market.
+* Coin info and news for every pair: data from CoinGecko and latest headlines from crypto news sites.
 
 ## Supported exchanges
 Currently supported spot exchanges: **Binance, Bitfinex, Coinbase, HTX (formerly Huobi), Kraken, KuCoin, Poloniex**. Also a decentralized exchange (DEX) **Hyperliquid** is available (perpetuals and spot). All of them stream prices in real time. Another exchanges may be added in the future, but existing ones provide data for most of popular markets, so you can use Cryptonose 3 even if you trade on another exchange.
