@@ -5,7 +5,7 @@
 I've tried to make Cryptonose 3 easy to use, but in case I've failed, here is the manual ;)
 
 ## First run
-After first run, you will see main application window with no exchanges and the alerts panel on the right. Choose an exchange from the list in the middle of the window to start tracking price changes. To add more exchanges later, click on _+ Exchange_ above the table. If you used Cryptonose 2 on Linux before, its settings are imported automatically: open exchanges, alert conditions, pairs, pinned tickers and blocked pairs.
+After first run, you will see main application window with no exchanges and the alerts panel on the right. Choose an exchange from the list in the middle of the window to start tracking price changes. To add more exchanges later, click on _+ Exchange_ above the table.
 
 Each exchange starts with a default set of currency pairs (the top pairs by 24h volume of its main markets), so you will see prices and alerts right away. To change the pairs, click _Pairs_ in the exchange tab. There are two sections in pairs selection window:
 
@@ -60,9 +60,8 @@ To visualize, example values of relative price change:
 * ***Pair*** - currency pair name in format _base/quote_ (perpetuals on Hyperliquid: _base-PERP_).
 * ***Price change*** - percent change in the price in given period, and _rel_ - relative price change.
 * ***Exchange*** - colored label with the exchange name.
-* ***Period*** - 5m or 30m, and the real duration of the price change (_in 2m 45s_).
-* ***Prices*** - the price before and after the change. Example: if price alert is triggered by price drop from 0.15 to 0.14, you'll see 0.15 → 0.14.
-* ***Time*** of the alert.
+* ***Period*** - 5m or 30m, and the time of the alert.
+* ***Prices*** - the price before and after the change, and the real duration of the change. Example: if price alert is triggered by price drop from 0.15 to 0.14 within 2 minutes 45 seconds, you'll see _0.150000 → 0.140000 in 2m 45s_.
 * ***Chart*** - minimalistic graph showing short (4 hours) price history, with a dashed line at the price before the change. Just to illustrate a recent trend.
 * ***Buttons*** - _CG_ and _N_ show [coin info and news](#coin-info-and-news), _Block_ blocks alerts for the pair.
 
@@ -162,7 +161,7 @@ To sum up, low value of liquidity factor for given currency pair means that ther
 
 Notification shows details of price alert: pair, percent change, period, exchange, relative change, and the prices before and after the change. A green or red icon shows if the price went up or down. **Click the _Browser_ button to open the market** in web browser (on Windows and MacOS you can also click on the notification).
 
-If you enable it in settings, Cryptonose 3 also notifies you about connection problems.
+Cryptonose 3 also notifies you about connection errors: when an exchange can't be reached, no pairs were found, or no prices arrived for 5 minutes. You can turn it off in settings, or turn on _Connection status notifications_ to be notified about every connection change (connected, reconnecting and errors).
 
 ## Settings
 
@@ -170,7 +169,7 @@ If you enable it in settings, Cryptonose 3 also notifies you about connection pr
 ![cryptonose settings]({{ site.baseurl }}/images/settings.png "Settings")
 
 * ***Appearance*** - theme (system, dark or light) and font size (system or custom).
-* ***Alerts*** - custom sounds for rising and falling prices, a browser command (for example `firefox --new-tab %s`, where `%s` is replaced with the page address; system default browser if empty) and notifications about connection problems.
+* ***Alerts*** - custom sounds for rising and falling prices, a browser command (for example `firefox --new-tab %s`, where `%s` is replaced with the page address; system default browser if empty), connection status notifications and connection error notifications, and the experimental tray icon.
 * ***Coin info and news*** - optional CoinGecko API keys (a free Demo key raises CoinGecko limits, a paid key adds CoinGecko news) and the list of news feeds.
 
 ## Keyboard shortcuts
@@ -188,4 +187,4 @@ If you enable it in settings, Cryptonose 3 also notifies you about connection pr
 | Space | Pin or unpin the selected pair |
 
 ## Comments for Hyperliquid support
-Hyperliquid is a decentralized exchange with its own blockchain. Cryptonose 3 supports its perpetual futures (shown as _BTC-PERP_ etc., market _PERP_ in pairs settings) and spot markets (mostly quoted in USDC). Prices are mid prices (between the best buy and sell offers), streamed for every block of the Hyperliquid blockchain, so they are updated in real time.
+Hyperliquid is a decentralized exchange with its own blockchain. Cryptonose 3 supports its perpetual futures (shown as _BTC-PERP_ etc., market _PERP_ in pairs settings) and spot markets (mostly quoted in USDC). Like on other exchanges, prices come from all trades, streamed in real time.

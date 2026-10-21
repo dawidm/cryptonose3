@@ -18,7 +18,7 @@ is large in % and in relative terms, or very large in relative terms alone.
 | Kraken | CEX | websocket trades (v2 `trade`) |
 | KuCoin | CEX | websocket trades (`/market/match`) |
 | Poloniex | CEX | websocket trades (API v3) |
-| Hyperliquid | DEX (perps + spot) | websocket `allMids`, every block |
+| Hyperliquid | DEX (perps + spot) | websocket trades |
 
 Bittrex (closed) and Uniswap via The Graph hosted service (shut down) from v2 are gone.
 
@@ -56,7 +56,6 @@ cd app && pnpm tauri build                               # installers
 ```
 
 Settings are stored in `settings.json` in the app config directory (`~/.config/pl.dmotyka.cryptonose` on Linux).
-Cryptonose 2 settings (thresholds, pairs, pins, blocks) are imported once on first start.
 
 Releases are built by `.github/workflows/release.yml` when a `v*` tag is pushed.
 

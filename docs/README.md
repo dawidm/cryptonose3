@@ -8,12 +8,14 @@
 <p style="text-align: center; margin-top: 40px; margin-bottom: 40px;"><a class="download-button" href="{{ site.baseurl }}/download/">Download Cryptonose 3</a></p>
 
 ## What is Cryptonose 3?
+**TLDR: Cryptonose 3 will allert you which crypto markets are making significant moves right now.** It's mostly usefull for day trading/scalping for fast notification of which markets are making moves.
+
 Cryptonose 3 is a **free and open source** desktop application that keeps track of significant price changes within small time periods (5 minutes, 30 minutes) on cryptocurrency markets. It works in real time, connecting directly to supported cryptocurrency exchanges, giving you instant alert when price rises or drops. It's also useful just for tracking prices and provides small charts showing price movements in the last 4 hours.
 
-Cryptonose 3 is a complete rewrite of Cryptonose 2. It's a lighter and faster native application (Rust and Tauri instead of Java), with new exchanges, news about coins and a refreshed interface. On Linux, settings of Cryptonose 2 (alert conditions, pairs, pinned tickers, blocked pairs) are imported automatically on the first run.
+Cryptonose 3 is a complete rewrite of Cryptonose 2. It's a lighter and faster native application (Rust and Tauri instead of Java), with new exchanges, news about coins and a refreshed interface.
 
 ## Do I need Cryptonose 3?
-You may want to try Cryptonose 3 if you are day trader on cryptocurrency markets. I started creating Cryptonose as personal project. I've been using it in trading for over 4 years.
+You may want to try Cryptonose 3 if you are day trader on cryptocurrency markets. I started creating Cryptonose as personal project. I've been using it in trading for many years.
 
 ## The most important features of Cryptonose 3
 * Cryptonose 3 uses **real-time connection** to an exchange. For selected cryptocurrency pairs, it uses all exchange transactions (fills) to track the price.
