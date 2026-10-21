@@ -12,6 +12,13 @@ header {
 footer {
 	width: 180px;
 }
+header h1, header h1 a {
+	color: #000;
+	white-space: nowrap;
+}
+header h1 {
+	font-size: 1.7em;
+}
 .wrapper {
 	width: 900px;
 }
