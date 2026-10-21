@@ -4,6 +4,8 @@
 
 I've tried to make Cryptonose 3 easy to use, but in case I've failed, here is the manual ;)
 
+**Contents:** [First run](#first-run) · [Main window](#main-window) · [Pairs, search and pins](#pairs-search-and-pins) · [How alerts work](#how-alerts-work) · [Notification](#notification) · [Settings](#settings) · [Keyboard shortcuts](#keyboard-shortcuts) · [Exchange notes](#exchange-notes)
+
 ## First run
 After first run, you will see main application window with no exchanges and the alerts panel on the right. Choose an exchange from the list in the middle of the window to start tracking price changes. To add more exchanges later, click on _+ Exchange_ above the table.
 
@@ -40,13 +42,6 @@ Very low volume (so with low liquidity) currency pairs could trigger a lot of un
 ### Alerts panel
 The panel shows up to 100 latest alerts, newest at the top. _Clear_ removes all of them (after a confirmation), _Blocked pairs_ shows the [alert blocks](#blocking-alerts).
 
-### What is relative price change?
-Relative price change is an indicator reflecting price change in given period in comparison to the typical price change in the same time periods in past. The "past" is set to 50 periods. More technically, it's the price change divided by a weighted average of differences between high and low of past periods (candles) - more recent candles have bigger weight. Candles where the price didn't move are skipped.
-To visualize, example values of relative price change:
-* around 1 is typical value
-* 4 is pretty much - means that probably something interesting is happening with the price
-* 8 is very much - almost surely something interesting is happening with the price
-
 ### Price alert
 * ***Arrow*** - green up arrow for a price rise, red down arrow for a drop.
 * ***Pair*** - currency pair name in format _base/quote_ (perpetuals on Hyperliquid: _base-PERP_).
@@ -68,12 +63,11 @@ You can see and remove alert blocks by clicking on _Blocked pairs_ in the alerts
 ### Exchange tab
 * ***Toolbar*** - connection status (with a message when something is wrong), progress of loading price history, number of pairs and time of the last update. Buttons:
   * _Pairs_ - [pairs selection](#first-run),
-  * _Alert conditions_ - [alert conditions](#alerts-conditions) for this exchange,
+  * _Alert conditions_ - [alert conditions](#alert-conditions) for this exchange,
   * _Reconnect_ - reload pairs and reconnect.
 * ***Table*** - columns: pair, last price, 5m and 30m percent change, 5m and 30m relative change (there was not enough place for the word "change" ;)), and buttons: _CG_, _N_ ([coin info and news](#coin-info-and-news)) and ☆ to pin the pair. Click on a column name to sort; the table is re-sorted every few seconds so rows don't jump all the time. You can open web browser with market web page by double-clicking on a row. You can also select a row with arrow keys and press Enter to open the market or Space to pin it.
 
-### What exactly are price changes in Cryptonose 3?
-Price change in Cryptonose 3 is based on maximum (positive or negative) change during recent time period (5 minutes or 30 minutes). You should not confuse it with a change between beginning and ending of the period. For example if price 5 minutes ago was 2.0, then it went up to 4.0 and now it dropped slightly to 3.7, 5m price change values will be calculated for biggest rise - from 2.0 to 4.0 - in percents it's +100%.
+## Pairs, search and pins
 
 ### Search for a currency pair
 The _Find pair (F)_ field is always visible at the top of the Cryptonose 3 window. You can click on it or just press F key to start typing, to find desired currency pair in all open exchanges. Results show the same columns as exchange tables, with a colored mark of the exchange. Use arrow keys to select a pair and press Enter to go to its page, or double-click it.
@@ -91,8 +85,20 @@ You can find small _CG_ and _N_ buttons on the alerts panel and in currency pair
 * **Info** (_CG_ button) - additional data about coin's price, market cap, rank and usually a short description, with links to CoinGecko and the coin's website. All the data are from CoinGecko website. The data are downloaded using coin's symbol (BTC, ETH, DOGE etc.). If there's a situation when there are multiple coins with the same symbol (which is not very likely), data for a coin with highest volume will be shown. So keep in mind there's a minimal chance that data for wrong coin will be shown.
 * **News** (_N_ button) - latest news about a coin from the last 7 days. Headlines come from news sites RSS feeds: CoinDesk, Cointelegraph, Decrypt, The Block and Bitcoin Magazine (you can change the list in settings), and from CoinGecko if you have a paid CoinGecko API key. News are found by the coin name or symbol. For symbols that are also common words (ONE, GAS etc.), only the coin name or _$SYMBOL_ is used. Small coins may have no news.
 
-### Alerts conditions
-The predefined values should be useful. You may want to try them before considering any changes. Try starting with the _Low_ preset and then switching to the next presets if the alerts are to frequent. Conditions are set for each exchange separately; use _Save for all exchanges_ to use the same values everywhere.
+## How alerts work
+
+### What is relative price change?
+Relative price change is an indicator reflecting price change in given period in comparison to the typical price change in the same time periods in past. The "past" is set to 50 periods. More technically, it's the price change divided by a weighted average of differences between high and low of past periods (candles) - more recent candles have bigger weight. Candles where the price didn't move are skipped.
+To visualize, example values of relative price change:
+* around 1 is typical value
+* 4 is pretty much - means that probably something interesting is happening with the price
+* 8 is very much - almost surely something interesting is happening with the price
+
+### What exactly are price changes in Cryptonose 3?
+Price change in Cryptonose 3 is based on maximum (positive or negative) change during recent time period (5 minutes or 30 minutes). You should not confuse it with a change between beginning and ending of the period. For example if price 5 minutes ago was 2.0, then it went up to 4.0 and now it dropped slightly to 3.7, 5m price change values will be calculated for biggest rise - from 2.0 to 4.0 - in percents it's +100%.
+
+### Alert conditions
+The predefined values should be useful. You may want to try them before considering any changes. Try starting with the _Low_ preset and then switching to the next presets if the alerts are too frequent. Conditions are set for each exchange separately; use _Save for all exchanges_ to use the same values everywhere.
 
 [![cryptonose alert conditions]({{ site.baseurl }}/images/screenshot_alerts.png "Alert conditions")]({{ site.baseurl }}/images/screenshot_alerts.png)
 
@@ -114,7 +120,7 @@ These settings are quite flexible. If you're only interested in percent changes,
 
 A quick price change (5 minutes or shorter) doesn't trigger 30 minute alert when 5 minute alerts are enabled, because it's already reported by a 5 minute alert.
 
-#### Alerts logic settings
+#### Alert logic settings
 
 * ***Block repeated alerts for the same pair for 30 minutes***. You can use this to make alerts less frequent, but keep in mind that during this time something interesting could happen, and you won't be notified.
 * ***Still alert when the change is at least 2× the previous alert***. For example if you get alert for a significant price rise and after a few seconds the price rises even more, more than 2x than the previous change - you'll get a second alert.
@@ -156,5 +162,7 @@ Cryptonose 3 also notifies you about connection errors: when an exchange can't b
 | Enter | Open the selected market |
 | Space | Pin or unpin the selected pair |
 
-## Comments for Hyperliquid support
+## Exchange notes
+
+### Hyperliquid
 Hyperliquid is a decentralized exchange with its own blockchain. Cryptonose 3 supports its perpetual futures (shown as _BTC-PERP_ etc., market _PERP_ in pairs settings) and spot markets (mostly quoted in USDC). Like on other exchanges, prices come from all trades, streamed in real time.
