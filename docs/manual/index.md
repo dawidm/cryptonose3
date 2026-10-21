@@ -18,15 +18,13 @@ The number of pairs that will be watched is shown at the bottom of the window. C
 
 The list of pairs is **refreshed every hour**, so _Top N_ follows volume changes. To avoid constant changes, a pair that is already watched stays until it falls about 20% below the cutoff (for example below the 24th place for top 20).
 
-<!-- IMAGE PLACEHOLDER: images/pairs-settings.png - Pairs window: markets with condition (Top N / Min 24h volume) and the all pairs list -->
-![cryptonose pairs configuration]({{ site.baseurl }}/images/pairs-settings.png "Pairs configuration window")
+[![cryptonose pairs configuration]({{ site.baseurl }}/images/screenshot_pairs.png "Pairs configuration window")]({{ site.baseurl }}/images/screenshot_pairs.png)
 
 **Note that choosing a lot of currency pairs will cause longer initialization** (Cryptonose 3 needs to get chart data from the exchange). Some exchanges have strict limits for downloading chart data - getting data for one currency pair takes about 2 seconds on Kraken and about 4 seconds on Bitfinex. You can see the progress in the exchange tab.  
 Very low volume (so with low liquidity) currency pairs could trigger a lot of undesirable price alerts. You should choose currency pairs carefully.
 
 ## Main window
-<!-- IMAGE PLACEHOLDER: images/main-window.png - whole main window with header, pinned tickers, exchange tabs and alerts panel -->
-[![cryptonose main window]({{ site.baseurl }}/images/main-window.png "Main window")]({{ site.baseurl }}/images/main-window.png)
+[![cryptonose main window]({{ site.baseurl }}/images/screenshot_main.png "Main window")]({{ site.baseurl }}/images/screenshot_main.png)
 
 * ***Header*** - global options, search and settings:
   * _Sound_ - play a sound when price alert occurs
@@ -39,10 +37,7 @@ Very low volume (so with low liquidity) currency pairs could trigger a lot of un
 * ***Exchange tabs*** - every exchange runs in separate tab. Near the exchange name there's a little dot showing connection status: green - connected, yellow - connecting, reconnecting or no updates, red - error or no pairs. DEX exchanges are marked with a _DEX_ label. Close a tab with _×_.
 * ***Alerts panel*** - recent price alerts from all exchanges, on the right side of the window (below the tables in a narrow window).
 
-## Alerts panel
-<!-- IMAGE PLACEHOLDER: images/cryptonose-price-alerts.png - alerts panel with several rising and falling alerts -->
-[![cryptonose price alerts]({{ site.baseurl }}/images/cryptonose-price-alerts.png "Alerts panel")]({{ site.baseurl }}/images/cryptonose-price-alerts.png)
-
+### Alerts panel
 The panel shows up to 100 latest alerts, newest at the top. _Clear_ removes all of them (after a confirmation), _Blocked pairs_ shows the [alert blocks](#blocking-alerts).
 
 ### What is relative price change?
@@ -53,9 +48,6 @@ To visualize, example values of relative price change:
 * 8 is very much - almost surely something interesting is happening with the price
 
 ### Price alert
-<!-- IMAGE PLACEHOLDER: images/cryptonose-price-alert.png - a single alert row (zoomed) -->
-[![cryptonose price alert]({{ site.baseurl }}/images/cryptonose-price-alert.png "Price alert")]({{ site.baseurl }}/images/cryptonose-price-alert.png)
-
 * ***Arrow*** - green up arrow for a price rise, red down arrow for a drop.
 * ***Pair*** - currency pair name in format _base/quote_ (perpetuals on Hyperliquid: _base-PERP_).
 * ***Price change*** - percent change in the price in given period, and _rel_ - relative price change.
@@ -73,10 +65,7 @@ You can block subsequent alerts for currency pairs using _Block_ button on the a
 
 You can see and remove alert blocks by clicking on _Blocked pairs_ in the alerts panel.
 
-## Exchange tab
-<!-- IMAGE PLACEHOLDER: images/cryptonose-exchange.png - exchange tab with toolbar and price table -->
-[![cryptonose exchange tab]({{ site.baseurl }}/images/cryptonose-exchange.png "Main window, exchange tab")]({{ site.baseurl }}/images/cryptonose-exchange.png)
-
+### Exchange tab
 * ***Toolbar*** - connection status (with a message when something is wrong), progress of loading price history, number of pairs and time of the last update. Buttons:
   * _Pairs_ - [pairs selection](#first-run),
   * _Alert conditions_ - [alert conditions](#alerts-conditions) for this exchange,
@@ -86,41 +75,26 @@ You can see and remove alert blocks by clicking on _Blocked pairs_ in the alerts
 ### What exactly are price changes in Cryptonose 3?
 Price change in Cryptonose 3 is based on maximum (positive or negative) change during recent time period (5 minutes or 30 minutes). You should not confuse it with a change between beginning and ending of the period. For example if price 5 minutes ago was 2.0, then it went up to 4.0 and now it dropped slightly to 3.7, 5m price change values will be calculated for biggest rise - from 2.0 to 4.0 - in percents it's +100%.
 
-## Search for a currency pair
-
-<!-- IMAGE PLACEHOLDER: images/cryptonose-search.png - search results from several exchanges -->
-[![cryptonose search]({{ site.baseurl }}/images/cryptonose-search.png "Cryptonose 3 search")]({{ site.baseurl }}/images/cryptonose-search.png)
-
+### Search for a currency pair
 The _Find pair (F)_ field is always visible at the top of the Cryptonose 3 window. You can click on it or just press F key to start typing, to find desired currency pair in all open exchanges. Results show the same columns as exchange tables, with a colored mark of the exchange. Use arrow keys to select a pair and press Enter to go to its page, or double-click it.
 
 When you've finished your search, press ESC or clear the field.
 
-## Pinned tickers
-
-<!-- IMAGE PLACEHOLDER: images/pinned-tickers.png - pinned tickers bar -->
-![cryptonose pinned tickers]({{ site.baseurl }}/images/pinned-tickers.png "Pinned tickers")
-
+### Pinned tickers
 In exchange tables and search results you can see a ☆ button. If you pin currency pair, you will see a small box with real-time price, price change in last 4 hours and mini-chart - that's a _pinned ticker_. Tickers will appear in the same order as their currency pairs were pinned. Pinned pairs are always watched, even if they don't meet pairs conditions. Double-click a ticker to open the market, click _×_ to unpin it.
 
 You can pin up to 10 pairs on open exchanges.
 
-## Coin info and news
+### Coin info and news
 You can find small _CG_ and _N_ buttons on the alerts panel and in currency pairs tables. They open a window with two tabs:
 
 * **Info** (_CG_ button) - additional data about coin's price, market cap, rank and usually a short description, with links to CoinGecko and the coin's website. All the data are from CoinGecko website. The data are downloaded using coin's symbol (BTC, ETH, DOGE etc.). If there's a situation when there are multiple coins with the same symbol (which is not very likely), data for a coin with highest volume will be shown. So keep in mind there's a minimal chance that data for wrong coin will be shown.
 * **News** (_N_ button) - latest news about a coin from the last 7 days. Headlines come from news sites RSS feeds: CoinDesk, Cointelegraph, Decrypt, The Block and Bitcoin Magazine (you can change the list in settings), and from CoinGecko if you have a paid CoinGecko API key. News are found by the coin name or symbol. For symbols that are also common words (ONE, GAS etc.), only the coin name or _$SYMBOL_ is used. Small coins may have no news.
 
-<!-- IMAGE PLACEHOLDER: images/cryptonose-coingecko.png - coin info window (Info tab) -->
-![coingecko coin info]({{ site.baseurl }}/images/cryptonose-coingecko.png "Coin info")
-
-<!-- IMAGE PLACEHOLDER: images/cryptonose-news.png - coin news window (News tab) -->
-![coin news]({{ site.baseurl }}/images/cryptonose-news.png "Coin news")
-
-## Alerts conditions
+### Alerts conditions
 The predefined values should be useful. You may want to try them before considering any changes. Try starting with the _Low_ preset and then switching to the next presets if the alerts are to frequent. Conditions are set for each exchange separately; use _Save for all exchanges_ to use the same values everywhere.
 
-<!-- IMAGE PLACEHOLDER: images/cryptonose-thresholds.png - alert conditions window -->
-![cryptonose alert conditions]({{ site.baseurl }}/images/cryptonose-thresholds.png "Alert conditions")
+[![cryptonose alert conditions]({{ site.baseurl }}/images/screenshot_alerts.png "Alert conditions")]({{ site.baseurl }}/images/screenshot_alerts.png)
 
 You can enable or disable 5 minute and 30 minute alerts separately. Price alert is triggered by:
 
@@ -156,17 +130,13 @@ To sum up, low value of liquidity factor for given currency pair means that ther
 
 ## Notification
 
-<!-- IMAGE PLACEHOLDER: images/notification.png - desktop notification of a price alert with the Browser button -->
-![cryptonose notification]({{ site.baseurl }}/images/notification.png "cryptonose desktop notification")
-
 Notification shows details of price alert: pair, percent change, period, exchange, relative change, and the prices before and after the change. A green or red icon shows if the price went up or down. **Click the _Browser_ button to open the market** in web browser (on Windows and MacOS you can also click on the notification).
 
 Cryptonose 3 also notifies you about connection errors: when an exchange can't be reached, no pairs were found, or no prices arrived for 5 minutes. You can turn it off in settings, or turn on _Connection status notifications_ to be notified about every connection change (connected, reconnecting and errors).
 
 ## Settings
 
-<!-- IMAGE PLACEHOLDER: images/settings.png - settings window -->
-![cryptonose settings]({{ site.baseurl }}/images/settings.png "Settings")
+[![cryptonose settings]({{ site.baseurl }}/images/screenshot_settings.png "Settings")]({{ site.baseurl }}/images/screenshot_settings.png)
 
 * ***Appearance*** - theme (system, dark or light) and font size (system or custom).
 * ***Alerts*** - custom sounds for rising and falling prices, a browser command (for example `firefox --new-tab %s`, where `%s` is replaced with the page address; system default browser if empty), connection status notifications and connection error notifications, and the experimental tray icon.

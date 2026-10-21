@@ -3,7 +3,7 @@
 # Cryptonose 3
 
 <!-- IMAGE PLACEHOLDER: images/desktop-screenshot.png - main window: exchange tab with price table, alerts panel on the right, pinned tickers and a desktop notification -->
-[![cryptonose main window with price alerts and notification]({{ site.baseurl }}/images/desktop-screenshot.png "Main window, price alerts")]({{ site.baseurl }}/images/screenshot_main.png)
+[![cryptonose main window with price alerts and notification]({{ site.baseurl }}/images/screenshot_main.png "Main window, price alerts")]({{ site.baseurl }}/images/screenshot_main.png)
 
 <p style="text-align: center; margin-top: 40px; margin-bottom: 40px;"><a class="download-button" href="{{ site.baseurl }}/download/">Download Cryptonose 3</a></p>
 
@@ -26,6 +26,3 @@ You may want to try Cryptonose 3 if you are day trader on cryptocurrency markets
 
 ## Supported exchanges
 Currently supported spot exchanges: **Binance, Bitfinex, Coinbase, HTX (formerly Huobi), Kraken, KuCoin, Poloniex**. Also a decentralized exchange (DEX) **Hyperliquid** is available (perpetuals and spot). All of them stream prices in real time. Another exchanges may be added in the future, but existing ones provide data for most of popular markets, so you can use Cryptonose 3 even if you trade on another exchange.
-
-<!-- IMAGE PLACEHOLDER: images/cryptonose-exchange.png - exchange tab with the price table -->
-[![cryptonose exchange tab]({{ site.baseurl }}/images/cryptonose-exchange.png "Main window, exchange tab")]({{ site.baseurl }}/images/cryptonose-exchange.png)
