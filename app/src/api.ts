@@ -86,7 +86,12 @@ export interface General {
   /** px; null follows the system */
   fontSize: number | null;
   theme: "system" | "dark" | "light";
+  /** All connection status changes. */
   connectionNotifications: boolean;
+  /** Connection errors only; implied by connectionNotifications. */
+  connectionErrorNotifications: boolean;
+  /** Experimental: tray icon, closing the window hides it. */
+  closeToTray: boolean;
   coingeckoDemoKey: string | null;
   coingeckoProKey: string | null;
   newsFeeds: string[];
@@ -247,6 +252,7 @@ export function onEngineEvents(handlers: {
   pairs: (e: PairsEvent) => void;
   updates: (e: UpdatesEvent) => void;
   alert: (e: AlertEvent) => void;
+  settings: (s: Settings) => void;
 }): Promise<UnlistenFn[]> {
   return Promise.all([
     listen<StatusEvent>("cn:status", (e) => handlers.status(e.payload)),
@@ -254,5 +260,7 @@ export function onEngineEvents(handlers: {
     listen<PairsEvent>("cn:pairs", (e) => handlers.pairs(e.payload)),
     listen<UpdatesEvent>("cn:updates", (e) => handlers.updates(e.payload)),
     listen<AlertEvent>("cn:alert", (e) => handlers.alert(e.payload)),
+    // settings changed outside the UI, e.g. toggles in the tray menu
+    listen<Settings>("cn:settings", (e) => handlers.settings(e.payload)),
   ]);
 }

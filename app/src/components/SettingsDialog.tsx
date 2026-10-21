@@ -96,8 +96,26 @@ export function SettingsDialog() {
         <p className="muted">For example: firefox --new-tab %s (%s is replaced with the page address).</p>
         <label className="row">
           <input type="checkbox" checked={g.connectionNotifications} onChange={(e) => setG({ ...g, connectionNotifications: e.target.checked })} />
-          Notify about connection problems
+          Connection status notifications
         </label>
+        <label className={`row ${g.connectionNotifications ? "disabled" : ""}`} title={g.connectionNotifications ? "Included in connection status notifications" : undefined}>
+          <input
+            type="checkbox"
+            checked={g.connectionNotifications || g.connectionErrorNotifications}
+            disabled={g.connectionNotifications}
+            onChange={(e) => setG({ ...g, connectionErrorNotifications: e.target.checked })}
+          />
+          Connection error notifications
+        </label>
+        <p className="muted">Status: connected, reconnecting, no updates, errors. Errors: the exchange can't be reached, no pairs found, or no price updates for 5 minutes.</p>
+        <label className="row">
+          <input type="checkbox" checked={g.closeToTray} onChange={(e) => setG({ ...g, closeToTray: e.target.checked })} />
+          Show tray icon, closing the window keeps Cryptonose 3 running in the tray
+          <span className="badge experimental">Experimental</span>
+        </label>
+        {g.closeToTray && (
+          <p className="muted">Quit from the tray icon menu. On Linux the icon needs a desktop with tray (AppIndicator) support, plain GNOME needs an extension.</p>
+        )}
       </fieldset>
       <fieldset>
         <legend>Coin info and news</legend>

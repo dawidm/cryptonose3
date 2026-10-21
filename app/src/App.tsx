@@ -26,6 +26,7 @@ function useEngineEvents() {
         st().addAlert(e);
         if (st().settings?.toggles.sound) playAlertSound(e.alert.priceChange > 0);
       },
+      settings: (s) => st().setSettings(s),
     });
     // listeners are registered before init starts the engines, so no event is missed
     unlisten.then(() =>

@@ -8,7 +8,7 @@ interface Props {
   reference?: number;
 }
 
-/** Close price line chart. Color follows the direction from the first to the last close. */
+/** Close price line chart. Color follows the direction from the first open to the last close, like the 4h change of pinned tickers. */
 export function Sparkline({ candles, width = 120, height = 32, reference }: Props) {
   if (candles.length < 2) return <svg className="spark" width={width} height={height} />;
   const closes = candles.map((c) => c.close);
@@ -18,7 +18,7 @@ export function Sparkline({ candles, width = 120, height = 32, reference }: Prop
   const x = (i: number) => (i / (closes.length - 1)) * (width - 2) + 1;
   const y = (p: number) => height - 2 - ((p - lo) / range) * (height - 4);
   const d = closes.map((c, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(c).toFixed(1)}`).join("");
-  const up = closes[closes.length - 1] >= closes[0];
+  const up = closes[closes.length - 1] >= candles[0].open;
   return (
     <svg className={`spark ${up ? "up" : "down"}`} width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden>
       {reference != null && <line x1={0} x2={width} y1={y(reference)} y2={y(reference)} className="spark-ref" />}

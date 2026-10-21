@@ -38,6 +38,7 @@ export function AlertSettingsDialog({ exchange }: { exchange: string }) {
   const setSettings = useStore((s) => s.setSettings);
   const setDialog = useStore((s) => s.setDialog);
   const [a, setA] = useState<AlertSettings>(() => structuredClone(settings!.exchanges[exchange].alerts));
+  const [confirmAll, setConfirmAll] = useState(false);
 
   const setPeriod = (i: number, p: Partial<PeriodThresholds>) => setA({ ...a, periods: a.periods.map((x, j) => (j === i ? { ...x, ...p } : x)) });
 
@@ -54,14 +55,25 @@ export function AlertSettingsDialog({ exchange }: { exchange: string }) {
       title={`${meta?.name} alert conditions`}
       onClose={() => setDialog(null)}
       footer={
-        <>
-          <span className="spacer" />
-          <button onClick={() => setDialog(null)}>Cancel</button>
-          <button onClick={() => save(true)}>Save for all exchanges</button>
-          <button className="primary" onClick={() => save(false)}>
-            Save
-          </button>
-        </>
+        confirmAll ? (
+          <>
+            <span className="confirm">Replace alert conditions of all exchanges with these?</span>
+            <span className="spacer" />
+            <button onClick={() => setConfirmAll(false)}>Cancel</button>
+            <button className="primary danger" onClick={() => save(true)}>
+              Save for all exchanges
+            </button>
+          </>
+        ) : (
+          <>
+            <span className="spacer" />
+            <button onClick={() => setDialog(null)}>Cancel</button>
+            <button onClick={() => setConfirmAll(true)}>Save for all exchanges</button>
+            <button className="primary" onClick={() => save(false)}>
+              Save
+            </button>
+          </>
+        )
       }
     >
       <p className="muted">

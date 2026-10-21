@@ -373,6 +373,14 @@ kbd {
   vertical-align: middle;
 }
 
+label.disabled {
+  opacity: 0.55;
+}
+.badge.experimental {
+  margin-left: 6px;
+  color: var(--warn);
+  border-color: currentColor;
+}
 .no-exchanges {
   flex: 1;
   display: flex;
@@ -653,16 +661,28 @@ button.danger {
   background: var(--bg-elev);
   font-size: 0.85em;
   flex: none;
+  position: relative;
+  padding-right: 18px;
 }
 .pinned-text > div:first-child {
   display: flex;
   align-items: center;
 }
 .unpin {
+  position: absolute;
+  top: 1px;
+  right: 2px;
   background: none;
   border: none;
-  padding: 0 0 0 6px;
+  padding: 0 3px;
+  line-height: 1;
+  font-size: 1.1em;
   color: var(--text-muted);
+  opacity: 0.6;
+}
+.unpin:hover {
+  opacity: 1;
+  color: var(--text);
 }
 
 /* menus, popups, modals */

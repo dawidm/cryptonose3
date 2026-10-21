@@ -1,6 +1,7 @@
 //! Hyperliquid, an on-chain order book DEX. Perpetuals use the quote "PERP", spot markets their
-//! quote token (mostly USDC). Live prices come from the `allMids` subscription, which streams mid
-//! prices of every market on each block.
+//! quote token (mostly USDC). Live prices come from the `trades` subscription of each pair.
+//! (`allMids` would be a single subscription, but a mid price jumps to absurd values when one side of
+//! a thin order book empties, e.g. best ask at 14000 for a 724 market.)
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -136,11 +137,12 @@ impl WsProtocol for Proto {
     }
 
     fn pairs_per_connection(&self) -> usize {
-        usize::MAX
+        // 1000 subscriptions per IP are allowed
+        200
     }
 
-    fn subscribe_msgs(&self, _pairs: &[Pair]) -> Vec<String> {
-        vec![json!({"method": "subscribe", "subscription": {"type": "allMids"}}).to_string()]
+    fn subscribe_msgs(&self, pairs: &[Pair]) -> Vec<String> {
+        pairs.iter().map(|p| json!({"method": "subscribe", "subscription": {"type": "trades", "coin": &*p.symbol}}).to_string()).collect()
     }
 
     fn client_ping(&self) -> Option<(Duration, String)> {
@@ -150,34 +152,34 @@ impl WsProtocol for Proto {
     fn decoder(&self, pairs: &[Pair]) -> Box<dyn WsDecoder> {
         Box::new(Decoder {
             symbols: pairs.iter().map(|p| (p.symbol.to_string(), p.symbol.clone())).collect(),
-            last: HashMap::new(),
+            since: now_ms(),
         })
     }
 }
 
 struct Decoder {
     symbols: HashMap<String, Arc<str>>,
-    last: HashMap<Arc<str>, f64>,
+    /// Connection time; a subscription first sends recent (possibly old) trades, those are skipped.
+    since: Ts,
 }
 
 impl WsDecoder for Decoder {
     fn decode(&mut self, frame: Frame<'_>) -> anyhow::Result<Decoded> {
         let Frame::Text(t) = frame else { return Ok(Decoded::default()) };
         let v: Value = serde_json::from_str(t)?;
-        if v["channel"] != "allMids" {
+        if v["channel"] != "trades" {
             return Ok(Decoded::default());
         }
-        let Some(mids) = v["data"]["mids"].as_object() else { return Ok(Decoded::default()) };
-        // the feed has no timestamps; every message is a snapshot of the current block
-        let ts = now_ms();
-        let mut ticks = Vec::new();
-        for (coin, px) in mids {
-            let (Some(symbol), Some(price)) = (self.symbols.get(coin), num(px)) else { continue };
-            if self.last.get(symbol) != Some(&price) {
-                self.last.insert(symbol.clone(), price);
-                ticks.push(Tick { symbol: symbol.clone(), price, ts });
-            }
-        }
+        let ticks = v["data"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter_map(|t| {
+                let symbol = self.symbols.get(t["coin"].as_str()?)?;
+                Some(Tick { symbol: symbol.clone(), price: num(&t["px"])?, ts: int(&t["time"])? })
+            })
+            .filter(|t| t.ts >= self.since - 1000)
+            .collect();
         Ok(Decoded::ticks(ticks))
     }
 }
@@ -214,15 +216,17 @@ mod tests {
     }
 
     #[test]
-    fn decode_all_mids_only_changes() {
-        let mut d = Proto.decoder(&[Pair::new("BTC", "BTC", PERP), Pair::new("@107", "HYPE", "USDC")]);
-        let msg = r##"{"channel":"allMids","data":{"mids":{"BTC":"82500.5","@107":"40.1","ETH":"2400","#1":"0.5"}}}"##;
-        let mut t = d.decode(Frame::Text(msg)).unwrap().ticks;
-        t.sort_by(|a, b| a.symbol.cmp(&b.symbol));
-        assert_eq!(t.iter().map(|t| (&*t.symbol, t.price)).collect::<Vec<_>>(), vec![("@107", 40.1), ("BTC", 82500.5)]);
-        let msg = r#"{"channel":"allMids","data":{"mids":{"BTC":"82501","@107":"40.1"}}}"#;
+    fn decode_trades() {
+        let mut d = Decoder {
+            symbols: HashMap::from([("BTC".to_string(), "BTC".into()), ("@107".to_string(), "@107".into())]),
+            since: 1792582000000,
+        };
+        let msg = r#"{"channel":"trades","data":[{"coin":"@107","side":"A","px":"81.578","sz":"26.61","time":1792582080121},{"coin":"@107","px":"81.6","sz":"1","time":1792582080500}]}"#;
         let t = d.decode(Frame::Text(msg)).unwrap().ticks;
-        assert_eq!(t.iter().map(|t| (&*t.symbol, t.price)).collect::<Vec<_>>(), vec![("BTC", 82501.0)]);
-        assert!(d.decode(Frame::Text(r#"{"channel":"pong"}"#)).unwrap().ticks.is_empty());
+        assert_eq!(t.iter().map(|t| (&*t.symbol, t.price, t.ts)).collect::<Vec<_>>(), vec![("@107", 81.578, 1792582080121), ("@107", 81.6, 1792582080500)]);
+        // trades sent on subscribe from before the connection, and other coins, are skipped
+        let old = r#"{"channel":"trades","data":[{"coin":"BTC","px":"83484.0","time":1792581000000},{"coin":"ETH","px":"2400","time":1792582100000}]}"#;
+        assert!(d.decode(Frame::Text(old)).unwrap().ticks.is_empty());
+        assert!(d.decode(Frame::Text(r#"{"channel":"subscriptionResponse","data":{}}"#)).unwrap().ticks.is_empty());
     }
 }

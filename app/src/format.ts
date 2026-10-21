@@ -1,8 +1,24 @@
-export function fmtPrice(p: number | null | undefined): string {
-  if (p == null || !isFinite(p)) return "–";
+/** Decimals for a price, by its size. */
+function priceDigits(p: number): number {
   const abs = Math.abs(p);
-  const digits = abs >= 1000 ? 2 : abs >= 1 ? 4 : abs >= 0.01 ? 6 : 8;
-  return p.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: digits });
+  return abs >= 1000 ? 2 : abs >= 1 ? 4 : abs >= 0.01 ? 6 : 8;
+}
+
+// decimals used so far per pair; only grow, so a pair's price keeps its width when it crosses a size boundary
+const pairDigits = new Map<string, number>();
+
+/**
+ * Price with a fixed number of decimals (trailing zeros kept), so the text doesn't change width as
+ * the price moves. With `key` (a pair), the number of decimals never decreases for that pair.
+ */
+export function fmtPrice(p: number | null | undefined, key?: string): string {
+  if (p == null || !isFinite(p)) return "–";
+  let digits = priceDigits(p);
+  if (key) {
+    digits = Math.max(digits, pairDigits.get(key) ?? 0);
+    pairDigits.set(key, digits);
+  }
+  return p.toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits });
 }
 
 export function fmtPct(p: number | null | undefined, digits = 2): string {

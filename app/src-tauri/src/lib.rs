@@ -1,7 +1,7 @@
 mod gecko;
-mod import_v2;
 mod news;
 mod settings;
+mod tray;
 mod update;
 
 use std::collections::HashMap;
@@ -184,16 +184,20 @@ fn show_notification(app: &AppHandle, icon: Option<String>, title: &str, body: &
         if let Some(icon) = &icon {
             n.icon(icon);
         }
+        // "default" is a click on the notification itself; KDE shows it as a button instead, so it gets a label
+        n.action("default", "Show");
         if url.is_some() {
             n.action(BROWSER_ACTION, "Browser");
         }
         match n.show() {
-            Ok(handle) => handle.wait_for_action(|action| {
-                if let (BROWSER_ACTION, Some(url)) = (action, &url) {
+            Ok(handle) => handle.wait_for_action(|action| match (action, &url) {
+                ("default", _) => tray::show_main_window(&app),
+                (BROWSER_ACTION, Some(url)) => {
                     if let Err(e) = open_url(&app, url) {
                         tracing::warn!("opening browser failed: {e}");
                     }
                 }
+                _ => {}
             }),
             Err(e) => tracing::warn!("notification failed: {e}"),
         }
@@ -222,8 +226,8 @@ fn show_notification(app: &AppHandle, icon: Option<String>, title: &str, body: &
     }
 }
 
-/// Windows and macOS: alert notifications get a "Browser" button; it and a click on the
-/// notification open the market.
+/// Windows and macOS: alert notifications get a "Browser" button that opens the market; a click on
+/// any notification brings the window back (from the tray, minimized or behind other windows).
 #[cfg(not(all(unix, not(target_os = "macos"))))]
 fn register_notification_actions(app: &tauri::App) -> tauri::Result<()> {
     use tauri_plugin_notification::{Action, ActionType};
@@ -233,7 +237,11 @@ fn register_notification_actions(app: &tauri::App) -> tauri::Result<()> {
     let handle = app.handle().clone();
     app.notification()
         .on_action(move |action| {
-            if !matches!(action.action_id(), "tap" | BROWSER_ACTION) {
+            if action.action_id() == "tap" {
+                tray::show_main_window(&handle);
+                return;
+            }
+            if action.action_id() != BROWSER_ACTION {
                 return;
             }
             let Some(id) = action.notification().map(|n| n.id()) else { return };
@@ -286,9 +294,16 @@ async fn forward_events(app: AppHandle, ex: Arc<dyn Exchange>, mut rx: tokio::sy
                 let Some(ev) = ev else { break };
                 match ev {
                     EngineEvent::Status { status, message } => {
-                        let notif = app.state::<AppState>().settings.lock().unwrap().general.connection_notifications;
+                        let (all, errors) = {
+                            let state = app.state::<AppState>();
+                            let s = state.settings.lock().unwrap();
+                            (s.general.connection_notifications, s.general.connection_error_notifications)
+                        };
                         let changed = last_status.is_some_and(|s| s != status);
-                        if notif && changed && matches!(status, EngineStatus::Connected | EngineStatus::Reconnecting | EngineStatus::NoUpdates) {
+                        let error = matches!(status, EngineStatus::Error | EngineStatus::NoPairs | EngineStatus::NoUpdates);
+                        // Stopped is closing the tab, Connecting is the start
+                        let any = !matches!(status, EngineStatus::Stopped | EngineStatus::Connecting);
+                        if changed && ((all && any) || (errors && error)) {
                             notify(&app, NotifIcon::App, &format!("{} {:?}", ex.meta().name, status), message.as_deref().unwrap_or(""), None);
                         }
                         last_status = Some(status);
@@ -596,7 +611,7 @@ fn open_link(app: AppHandle, url: String) -> CmdResult<()> {
 }
 
 #[tauri::command]
-async fn save_general(state: State<'_, AppState>, general: General) -> CmdResult<Settings> {
+async fn save_general(app: AppHandle, state: State<'_, AppState>, general: General) -> CmdResult<Settings> {
     let rebuild_news = {
         let mut s = state.settings.lock().unwrap();
         let rebuild = s.general.news_feeds != general.news_feeds || s.general.coingecko_pro_key != general.coingecko_pro_key;
@@ -608,13 +623,15 @@ async fn save_general(state: State<'_, AppState>, general: General) -> CmdResult
         *state.news.write().unwrap() = Arc::new(build_news(&general));
     }
     state.save();
+    tray::sync(&app);
     Ok(state.settings.lock().unwrap().clone())
 }
 
 #[tauri::command]
-fn save_toggles(state: State<'_, AppState>, toggles: Toggles) -> Settings {
+fn save_toggles(app: AppHandle, state: State<'_, AppState>, toggles: Toggles) -> Settings {
     state.settings.lock().unwrap().toggles = toggles;
     state.save();
+    tray::sync(&app);
     state.settings.lock().unwrap().clone()
 }
 
@@ -671,25 +688,7 @@ pub fn run() {
         .setup(|app| {
             let dir = app.path().app_config_dir()?;
             let store = SettingsStore::new(&dir);
-            let mut settings = store.load();
-            if !settings.v2_import_done {
-                if let Some(home) = std::env::var_os("HOME").or_else(|| std::env::var_os("USERPROFILE")) {
-                    match import_v2::import(std::path::Path::new(&home), &mut settings) {
-                        Ok(true) => tracing::info!("imported Cryptonose 2 settings"),
-                        Ok(false) => {}
-                        Err(e) => tracing::warn!("importing Cryptonose 2 settings failed: {e:#}"),
-                    }
-                }
-                settings.v2_import_done = true;
-                let _ = store.save(&settings);
-            }
-            if !settings.v2_pins_fixed {
-                if let Some(home) = std::env::var_os("HOME").or_else(|| std::env::var_os("USERPROFILE")) {
-                    import_v2::remove_unpinned(std::path::Path::new(&home), &mut settings);
-                }
-                settings.v2_pins_fixed = true;
-                let _ = store.save(&settings);
-            }
+            let settings = store.load();
             let gecko = Arc::new(Gecko::new(settings.general.coingecko_demo_key.clone()));
             let news = RwLock::new(Arc::new(build_news(&settings.general)));
             app.manage(AppState {
@@ -704,8 +703,10 @@ pub fn run() {
             });
             #[cfg(not(all(unix, not(target_os = "macos"))))]
             register_notification_actions(app)?;
+            tray::sync(app.handle());
             Ok(())
         })
+        .on_window_event(tray::on_window_event)
         .invoke_handler(tauri::generate_handler![
             init,
             start_exchange,

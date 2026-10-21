@@ -137,7 +137,7 @@ export function PriceTable({ items, showExchange = false, emptyText = "No pairs"
                     <span className="base">{it.pair.base}</span>
                     <span className="quote">{it.pair.quote === "PERP" ? "-PERP" : `/${it.pair.quote}`}</span>
                   </div>
-                  <div className="td num mono">{fmtPrice(row?.lastPrice)}</div>
+                  <div className="td num mono">{fmtPrice(row?.lastPrice, k)}</div>
                   <div className={`td num mono ${signClass(p0?.percentChange)}`}>{fmtPct(p0?.percentChange)}</div>
                   <div className={`td num mono rel ${signClass(p0?.relativeChange)}`}>{fmtRel(p0?.relativeChange)}</div>
                   <div className={`td num mono ${signClass(p1?.percentChange)}`}>{fmtPct(p1?.percentChange)}</div>

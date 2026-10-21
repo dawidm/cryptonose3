@@ -45,7 +45,10 @@ function AlertRow({ a }: { a: AlertEvent }) {
             <span className="ex-tag" style={{ color: meta?.color }}>
               {meta?.name ?? a.exchange}
             </span>
-            {al.periodSec / 60}m · in {fmtDuration(al.changeTimeSec)} · {fmtPrice(al.referencePrice)} → {fmtPrice(al.finalPrice)} · {fmtTime(al.finalPriceTs)}
+            {al.periodSec / 60}m · {fmtTime(al.finalPriceTs)}
+          </div>
+          <div className="alert-line2 muted mono">
+            {fmtPrice(al.referencePrice)} → {fmtPrice(al.finalPrice)} in {fmtDuration(al.changeTimeSec)}
           </div>
         </div>
         <Sparkline candles={a.chart} width={96} height={30} reference={al.referencePrice} />

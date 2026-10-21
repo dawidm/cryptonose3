@@ -28,7 +28,13 @@ pub struct General {
     pub font_size: Option<u32>,
     /// "system", "dark" or "light".
     pub theme: String,
+    /// Notify about every connection status change.
     pub connection_notifications: bool,
+    /// Notify about connection errors only (included in `connection_notifications`).
+    pub connection_error_notifications: bool,
+    /// Experimental: tray icon, closing the window hides it to the tray.
+    #[serde(default)]
+    pub close_to_tray: bool,
     /// Optional CoinGecko Demo API key (higher rate limits).
     pub coingecko_demo_key: Option<String>,
     /// Optional paid CoinGecko API key, enables CoinGecko news.
@@ -45,6 +51,8 @@ impl Default for General {
             font_size: None,
             theme: "system".into(),
             connection_notifications: false,
+            connection_error_notifications: true,
+            close_to_tray: false,
             coingecko_demo_key: None,
             coingecko_pro_key: None,
             news_feeds: DEFAULT_NEWS_FEEDS.iter().map(|s| s.to_string()).collect(),
@@ -114,9 +122,6 @@ pub struct Settings {
     pub exchanges: BTreeMap<String, ExchangeSettings>,
     pub hidden_version: Option<String>,
     pub many_pairs_warning_shown: bool,
-    pub v2_import_done: bool,
-    /// Pins imported by an early build included pairs unpinned in v2; removed once at startup.
-    pub v2_pins_fixed: bool,
 }
 
 impl Default for Settings {
@@ -128,8 +133,6 @@ impl Default for Settings {
             exchanges: BTreeMap::new(),
             hidden_version: None,
             many_pairs_warning_shown: false,
-            v2_import_done: false,
-            v2_pins_fixed: false,
         }
     }
 }
