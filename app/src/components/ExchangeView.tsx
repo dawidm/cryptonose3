@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../api";
 import { useStore } from "../store";
-import { fmtAgo } from "../format";
+import { fmtAgo, truncate } from "../format";
 import { run } from "../actions";
 import { PriceTable, type TableItem } from "./PriceTable";
 
@@ -48,9 +48,9 @@ export function ExchangeView({ id }: { id: string }) {
     <div className="exchange-view">
       <div className="ex-toolbar">
         <span className={`status-dot st-${status}`} />
-        <span className="status-text">
+        <span className="status-text" title={ex?.message ?? undefined}>
           {STATUS_LABEL[status]}
-          {ex?.message ? ` · ${ex.message}` : ""}
+          {ex?.message ? ` · ${truncate(ex.message, 50)}` : ""}
         </span>
         {ex?.progress && (
           <span className="progress" title="Loading price history">

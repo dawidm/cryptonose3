@@ -470,6 +470,8 @@ impl Engine {
             }
         };
         info!(exchange = self.id(), pairs = pairs.len(), "pairs selected");
+        // clears an error from a failed attempt while history loads
+        self.set_status(EngineStatus::Connecting, None);
         self.emit(EngineEvent::Pairs { pairs: pairs.clone() });
         if let Some(f) = self.load_pairs(&pairs, cmd_rx).await {
             return f;
