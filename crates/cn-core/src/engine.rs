@@ -28,6 +28,8 @@ const NO_PAIRS_RETRY: Duration = Duration::from_secs(300);
 const CANDLE_RETRIES: usize = 2;
 /// Number of base candles shown as a chart with alerts (4 hours of 5 minute candles).
 const ALERT_CHART_CANDLES: usize = 48;
+/// Wall clock jump between watchdog ticks that means the system was suspended.
+const TIME_SKIP_MS: i64 = 30_000;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -189,6 +191,7 @@ enum Command {
     Chart { symbol: String, reply: oneshot::Sender<Vec<Candle>> },
     Reconfigure(Box<EngineConfig>),
     Reconnect,
+    TimeSkip { skipped_ms: i64 },
     Stop,
 }
 
@@ -248,7 +251,26 @@ pub fn spawn(exchange: Arc<dyn Exchange>, config: EngineConfig) -> (EngineHandle
     tokio::spawn(async move {
         Engine::new(exchange, config, ev_tx).run(cmd_rx).await;
     });
+    // weak, so dropping the handle still stops the engine
+    tokio::spawn(watch_clock(cmd_tx.downgrade()));
     (EngineHandle { tx: cmd_tx }, ev_rx)
+}
+
+/// Detects system suspend: the wall clock jumps while the process was frozen.
+async fn watch_clock(tx: mpsc::WeakUnboundedSender<Command>) {
+    let mut tick = interval(Duration::from_secs(1));
+    tick.set_missed_tick_behavior(MissedTickBehavior::Delay);
+    let mut last = now_ms();
+    loop {
+        tick.tick().await;
+        let now = now_ms();
+        let skipped_ms = now - last;
+        last = now;
+        let Some(tx) = tx.upgrade() else { return };
+        if skipped_ms > TIME_SKIP_MS && tx.send(Command::TimeSkip { skipped_ms }).is_err() {
+            return;
+        }
+    }
 }
 
 struct PairState {
@@ -395,6 +417,11 @@ impl Engine {
                 }
             }
             Some(Command::Reconnect) => return Flow::Restart,
+            Some(Command::TimeSkip { skipped_ms }) => {
+                warn!(exchange = self.id(), "clock jumped {}s (system sleep?), reconnecting", skipped_ms / 1000);
+                self.set_status(EngineStatus::Reconnecting, Some("Connection interrupted, reconnecting".into()));
+                return Flow::Restart;
+            }
         }
         Flow::Continue
     }

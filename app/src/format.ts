@@ -66,3 +66,5 @@ export function signClass(v: number | null | undefined): string {
 }
 
 export const pairName = (p: { base: string; quote: string }) => (p.quote === "PERP" ? `${p.base}-PERP` : `${p.base}/${p.quote}`);
+
+export const truncate = (s: string, max: number) => (s.length > max ? `${s.slice(0, max - 1).trimEnd()}…` : s);

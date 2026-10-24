@@ -5,7 +5,7 @@ import { fmtPct, fmtPrice, pairName, signClass } from "../format";
 import { openMarket, unpin } from "../actions";
 import { Sparkline } from "./Sparkline";
 
-const CHART_REFRESH_MS = 60_000;
+const CHART_REFRESH_MS = 5_000;
 
 function PinnedTicker({ exchange, symbol }: { exchange: string; symbol: string }) {
   const pair = useStore((s) => s.exchanges[exchange]?.pairs.get(symbol));
@@ -17,7 +17,7 @@ function PinnedTicker({ exchange, symbol }: { exchange: string; symbol: string }
   useEffect(() => {
     let alive = true;
     let timer: ReturnType<typeof setTimeout>;
-    // retry soon while the engine is still loading history
+    // also picks up reloaded history soon after a reconnect
     const load = () =>
       api
         .chart(exchange, symbol)
@@ -25,7 +25,7 @@ function PinnedTicker({ exchange, symbol }: { exchange: string; symbol: string }
         .then((c) => {
           if (!alive) return;
           setChart(c.slice(-49));
-          timer = setTimeout(load, c.length ? CHART_REFRESH_MS : 5000);
+          timer = setTimeout(load, CHART_REFRESH_MS);
         });
     load();
     return () => {
