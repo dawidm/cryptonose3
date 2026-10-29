@@ -593,7 +593,7 @@ checksum = "1c133bc6a41be0d194c306b5506d15e6feeea7b1d6604bd3f8310dfb2ca96486"
 
 [[package]]
 name = "cn-cli"
-version = "3.1.0"
+version = "3.2.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -606,7 +606,7 @@ dependencies = [
 
 [[package]]
 name = "cn-core"
-version = "3.1.0"
+version = "3.2.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -620,7 +620,7 @@ dependencies = [
 
 [[package]]
 name = "cn-exchanges"
-version = "3.1.0"
+version = "3.2.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -783,7 +783,7 @@ dependencies = [
 
 [[package]]
 name = "cryptonose"
-version = "3.1.0"
+version = "3.2.0"
 dependencies = [
  "anyhow",
  "async-trait",
