@@ -23,6 +23,7 @@ use crate::types::{now_ms, Candle, MarketInfo, Pair, Ts};
 /// Interval of history candles fetched from exchanges; longer periods are aggregated from it.
 const BASE_INTERVAL_SEC: u32 = 300;
 const SEED_INTERVAL_SEC: u32 = 60;
+const FIRST_RETRY_DELAY: Duration = Duration::from_secs(10);
 const RETRY_DELAY: Duration = Duration::from_secs(60);
 const NO_PAIRS_RETRY: Duration = Duration::from_secs(300);
 const CANDLE_RETRIES: usize = 2;
@@ -440,6 +441,7 @@ impl Engine {
     async fn run_once(&mut self, cmd_rx: &mut mpsc::UnboundedReceiver<Command>) -> Flow {
         self.set_status(EngineStatus::Connecting, None);
         self.pairs.clear();
+        let mut failures = 0;
         let pairs = loop {
             let r = tokio::select! {
                 r = self.exchange.markets() => r,
@@ -462,8 +464,16 @@ impl Engine {
                 }
                 Err(e) => {
                     warn!(exchange = self.id(), "getting markets failed: {e:#}");
-                    self.set_status(EngineStatus::Error, Some(format!("Getting markets failed: {e:#}")));
-                    if let Some(f) = self.wait(cmd_rx, RETRY_DELAY).await {
+                    failures += 1;
+                    // the first failure is often transient (network not up yet after waking), retry quickly without reporting it
+                    let delay = if failures == 1 {
+                        FIRST_RETRY_DELAY
+                    } else {
+                        // the full chain repeats the url, the root cause is enough for the UI
+                        self.set_status(EngineStatus::Error, Some(format!("Getting markets failed: {}", e.root_cause())));
+                        RETRY_DELAY
+                    };
+                    if let Some(f) = self.wait(cmd_rx, delay).await {
                         return f;
                     }
                 }
